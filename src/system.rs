@@ -45,7 +45,7 @@ pub(crate) fn create_window<'a>(
         );
 
         let vulkano_window =
-            vulkano_windows.create_window(event_loop, entity, &window, &context.context, &settings);
+            vulkano_windows.create_window(event_loop, entity, &window, &context.0, &settings);
         window
             .resolution
             .set_scale_factor(vulkano_window.window().scale_factor());

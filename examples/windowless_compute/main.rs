@@ -61,21 +61,22 @@ fn run_compute_shader_once_then_exit(
                 "
             }
         }
-        let cs = cs::load(context.context.device().clone())
+
+        let cs = cs::load(context.0.device().clone())
             .unwrap()
             .entry_point("main")
             .unwrap();
         let stage = PipelineShaderStageCreateInfo::new(cs);
         let layout = PipelineLayout::new(
-            context.context.device().clone(),
+            context.0.device().clone(),
             PipelineDescriptorSetLayoutCreateInfo::from_stages([&stage])
-                .into_pipeline_layout_create_info(context.context.device().clone())
+                .into_pipeline_layout_create_info(context.0.device().clone())
                 .unwrap(),
         )
         .unwrap();
 
         ComputePipeline::new(
-            context.context.device().clone(),
+            context.0.device().clone(),
             None,
             ComputePipelineCreateInfo::stage_layout(stage, layout),
         )
@@ -84,7 +85,7 @@ fn run_compute_shader_once_then_exit(
 
     // Create buffer
     let data_buffer = Buffer::from_iter(
-        context.context.memory_allocator().clone(),
+        context.0.memory_allocator().clone(),
         BufferCreateInfo {
             usage: BufferUsage::STORAGE_BUFFER,
             ..Default::default()
@@ -99,10 +100,10 @@ fn run_compute_shader_once_then_exit(
     .unwrap();
 
     let command_buffer_allocator =
-        StandardCommandBufferAllocator::new(context.context.device().clone(), Default::default());
+        StandardCommandBufferAllocator::new(context.0.device().clone(), Default::default());
 
     let descriptor_set_allocator =
-        StandardDescriptorSetAllocator::new(context.context.device().clone(), Default::default());
+        StandardDescriptorSetAllocator::new(context.0.device().clone(), Default::default());
 
     // Create pipeline layout & descriptor set (data inputs)
     let layout = pipeline.layout().set_layouts().first().unwrap();
@@ -117,7 +118,7 @@ fn run_compute_shader_once_then_exit(
     // Build command buffer
     let mut builder = AutoCommandBufferBuilder::primary(
         &command_buffer_allocator,
-        context.context.compute_queue().queue_family_index(),
+        context.0.compute_queue().queue_family_index(),
         CommandBufferUsage::OneTimeSubmit,
     )
     .unwrap();
@@ -136,8 +137,8 @@ fn run_compute_shader_once_then_exit(
     let command_buffer = builder.build().unwrap();
 
     // Execute the command buffer & wait on it to finish
-    let future = sync::now(context.context.device().clone())
-        .then_execute(context.context.compute_queue().clone(), command_buffer)
+    let future = sync::now(context.0.device().clone())
+        .then_execute(context.0.compute_queue().clone(), command_buffer)
         .unwrap()
         .then_signal_fence_and_flush()
         .unwrap();

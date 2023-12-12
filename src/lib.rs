@@ -40,9 +40,7 @@ pub use vulkano_windows::*;
 
 /// Wrapper around [`VulkanoContext`] to allow using them as resources
 #[derive(Resource)]
-pub struct BevyVulkanoContext {
-    pub context: VulkanoContext,
-}
+pub struct BevyVulkanoContext(pub VulkanoContext);
 
 #[cfg(target_os = "android")]
 pub use winit::platform::android::activity::AndroidApp;
@@ -97,9 +95,7 @@ impl Plugin for VulkanoWinitPlugin {
         let BevyVulkanoSettings {
             vulkano_config, ..
         } = config;
-        let vulkano_context = BevyVulkanoContext {
-            context: VulkanoContext::new(vulkano_config),
-        };
+        let vulkano_context = BevyVulkanoContext(VulkanoContext::new(vulkano_config));
         // Place config back as resource..
         let new_config = BevyVulkanoSettings {
             vulkano_config: VulkanoConfig::default(),

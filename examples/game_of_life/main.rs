@@ -78,13 +78,13 @@ fn create_pipelines(
     let primary_window = windows.get_vulkano_window(window_entity).unwrap();
     // Create compute pipeline to simulate game of life
     let game_of_life_pipeline = GameOfLifeComputePipeline::new(
-        context.context.memory_allocator(),
+        context.0.memory_allocator(),
         primary_window.renderer.graphics_queue(),
         [512, 512],
     );
     // Create our render pass
     let place_over_frame = RenderPassPlaceOverFrame::new(
-        context.context.memory_allocator().clone(),
+        context.0.memory_allocator().clone(),
         primary_window.renderer.graphics_queue(),
         primary_window.renderer.swapchain_format(),
     );
